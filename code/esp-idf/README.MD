@@ -28,6 +28,12 @@ idf.py -p /dev/tty.SLAB_USBtoUART monitor
 ```
 
 
+tips
+
+* use ESP_LOGD and use menuconfig to define log level in component configuration of LOG
+* to get out of monitor: CTRL+]
+
+
 
 
 

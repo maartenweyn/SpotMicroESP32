@@ -51,6 +51,11 @@ static void i2c_example_master_init(void)
                        I2C_EXAMPLE_MASTER_TX_BUF_DISABLE, 0));
 }
 
+void servos_off()  {
+     for (int i=0;i<12;i++)
+        setPWM(i, 0, 0);
+}
+
 void task_PCA9685(void *ignore)
 {
     printf("Executing on core %d\n", xPortGetCoreID());
@@ -61,18 +66,56 @@ void task_PCA9685(void *ignore)
 
     set_pca9685_adress(I2C_ADDRESS);
     resetPCA9685();
-    setFrequencyPCA9685(50);  // 1000 Hz
+    setFrequencyPCA9685(50); 
 
     printf("Finished setup, entering loop now\n");
+
+    int16_t servo_min[12] = {123+35+5,123+30,123+25+3,  123-7+5,123-12+15,123-9+10,     123+8,123-50-0,123+10-8,    123+27-7,123+45+17,123+12+5}; //3% 
+    int16_t servo_max[12] = {450+55+5,450+40-80,450+5+3,   450+35+5,450+30+15,450+35+10,   450+48,450+15-0,450-20-8,   450+15-7,450+120+17,450-10+5}; //12%
+    //int16_t servo_min[12] = {163,153,151,121,126,124,131,73,125,143,185,140};
+
+    float servo_conversion[12] = {1.927778,1.427778,1.705556,2.050000,2.050000,2.061111,2.038889,2.177778,1.650000,1.750000,2.233333,1.694444};
+
+    int sleep_angle[12] = {90, 150, 0, 90, 20, 180, 90, 150, 0, 90, 30, 180};
+    uint8_t from = 10;
+    uint8_t to = from + 1;
+
+    printf("int16_t servo_min[12] = {");
+
+    for (int i=0;i<12;i++)
+            printf("%d,",servo_min[i]);
+
+    printf("};\n\n");
+
+    printf("float servo_conversion[12] = {");
+
+    for (int i=0;i<12;i++) {
+        servo_conversion[i] = (servo_max[i]-servo_min[i])/180.0;
+        printf("%f,",servo_conversion[i]);     
+    }   
+
+    printf("};\n\n");
+
+
+
+    //servos_off();
+
+    while(1) {
+        for (int i=0;i<12;i++)
+        {
+            ret = setPWM(i, 0,  (uint16_t) (0.5 + servo_min[i] + (servo_conversion[i] * sleep_angle[i] )));
+            printf("Servod %d: %f (%d)\n", i, servo_min[i] + (servo_conversion[i] * sleep_angle[i] ), (int) (0.5 +  servo_min[i] + (servo_conversion[i] * sleep_angle[i] )));
+        }
+        vTaskDelay(2000/portTICK_PERIOD_MS);
+    };
 
     while(1)
     {
 
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        //printf("Servos min\n");
 
-        printf("Left Front Shoulder to default position\n");
-
-        ret = setPWM(2, 0, 290);
+        for (int i=from;i<to;i++)
+            ret = setPWM(i, 0, servo_min[i]);
 
         if(ret == ESP_ERR_TIMEOUT)
         {
@@ -87,10 +130,31 @@ void task_PCA9685(void *ignore)
             printf("No ack, sensor not connected...skip...\n");
         }
 
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(2000/portTICK_PERIOD_MS);
 
-        printf("Move leg up: %d\n", 2);
-        setPWM(2, 0, 300);
+        //printf("Servos mid\n");
+
+        for (int i=from;i<to;i++)
+            //ret = setPWM(i, 0, (servo_max[i] + servo_min[i]) / 2);
+            //ret = setPWM(i, 0, servo_min[i] + (servo_max[i] - servo_min[i]) / 2);
+            ret = setPWM(i, 0, (uint16_t) (0.5 + servo_min[i] + (servo_conversion[i] * 90 )));
+        
+
+        vTaskDelay(1000 / portTICK_RATE_MS);
+
+        //printf("Servos max\n");;
+
+        for (int i=from;i<to;i++)
+            //ret = setPWM(i, 0, servo_max[i]);
+            ret = setPWM(i, 0, (uint16_t) (0.5 + servo_min[i] + (servo_conversion[i] * 180 )));
+        
+        vTaskDelay(2000 / portTICK_RATE_MS);
+
+        //printf("Servos mid\n");
+
+        for (int i=from;i<to;i++)
+            
+            ret = setPWM(i, 0, (uint16_t) (0.5 + servo_min[i] + (servo_conversion[i] * 90 )));
         
 
         vTaskDelay(1000 / portTICK_RATE_MS);

@@ -4,7 +4,6 @@
 // SCL - 22
 //************
 
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
@@ -26,14 +25,13 @@ void setup() {
   // initialize digital pin LED_BUILTIN as an output.
   pinMode(LED_BUILTIN, OUTPUT);
 
-  // 12-Bit 16 Channel PWM Module
-
-  PWM.begin();
-  PWM.setPWMFreq(50);
-
   Serial.begin(115200);
 
   while (!Serial);
+
+  // 12-Bit 16 Channel PWM Module
+  PWM.begin();
+  PWM.setPWMFreq(50);
 
   servoCommandParser.registerCommand("s", "uu", &cmd_servo);
   Serial.println("registered command: s <uint64> <uint64> ");

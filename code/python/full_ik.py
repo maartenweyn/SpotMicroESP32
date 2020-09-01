@@ -179,7 +179,7 @@ xm = 0
 ym = 0
 zm = 0
 
-drawRobot(Lp,bodyIK(0.3,0.1,-0.4,xm,ym,zm))
+drawRobot(Lp,bodyIK(0,0,0,xm,ym,zm))
 
 plt.show()
 

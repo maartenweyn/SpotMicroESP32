@@ -81,9 +81,9 @@ def bodyIK(omega,phi,psi,xm,ym,zm):
     
     return (Tlf,Trf,Tlb,Trb,Tm)
 
-omega =  pi/4 # Body xrot
+omega =  0 #pi/4 # Body xrot
 phi =0#math.pi/4# Body YRot
-psi = 0#math.pi/6 # Body ZRot
+psi = 0 #math.pi/6 # Body ZRot
 
 xm = 0
 ym = 0
