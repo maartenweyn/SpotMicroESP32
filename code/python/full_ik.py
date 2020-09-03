@@ -41,7 +41,11 @@ def legIK(x,y,z):
     G=F-l2  
     H=sqrt(G**2+z**2)
 
+    # print("F {:.2f}, G {:.2f}, J {:.2f}".format(F, G, H))
+
     theta1=-atan2(y,x)-atan2(F,-l1)
+    # print("T1 {:.2f} = - {:.2f}- {:.2f}".format(theta1, atan2(y,x), atan2(F,-l1)))
+
     
     D=(H**2-l3**2-l4**2)/(2*l3*l4)
     theta3=acos(D) 
@@ -105,8 +109,21 @@ def bodyIK(omega,phi,psi,xm,ym,zm):
 
     Rxyz=Rx.dot(Ry).dot(Rz)
 
+    # print("Rx")
+    # print(Rx)
+    # print("Ry")
+    # print(Ry)
+    # print("Rz")
+    # print(Rz)
+    # print("Rxyz")
+    # print(Rxyz)
+
     T = np.array([[0,0,0,xm],[0,0,0,ym],[0,0,0,zm],[0,0,0,0]])
     Tm = T+Rxyz
+
+
+    # print("Tm")
+    # print(Tm)
     
     Trb = Tm.dot(np.array([
         [np.cos(pi/2),0,np.sin(pi/2),-L/2],
@@ -131,6 +148,15 @@ def bodyIK(omega,phi,psi,xm,ym,zm):
         [0,1,0,0],
         [-np.sin(pi/2),0,np.cos(pi/2),W/2],
         [0,0,0,1]]))
+
+    # print("Trb")
+    # print(Trb)
+    # print("Trf")
+    # print(Trf)
+    # print("Tlf")
+    # print(Tlf)
+    # print("Tlb")
+    # print(Tlb)
     
     return (Tlf,Trf,Tlb,Trb,Tm)
 
@@ -151,35 +177,52 @@ def drawRobot(Lp,bodyIk):
     # Invert local X
     Ix=np.array([[-1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
 
-    #Q=np.linalg.inv(Tlf)@(Lp[0])
+
     Q=np.linalg.inv(Tlf).dot(Lp[0])
     p=[Tlf.dot(x) for x in calcLegPoints(legIK(Q[0],Q[1],Q[2]))]
     drawLegPoints(p)
 
-    Q=np.linalg.inv(Tlb).dot(Lp[2])
-    p=[Tlb.dot(x) for x in calcLegPoints(legIK(Q[0],Q[1],Q[2]))]
-    drawLegPoints(p)
+    IK = legIK(Q[0],Q[1],Q[2])
+    IKReal = (pi/2 - IK[0], pi/3 - IK[1], pi - IK[2])
+    print("LegIK LF: {:3.0f}, {:3.0f}, {:3.0f} -> {:3.0f}, {:3.0f}, {:3.0f} ".format(degrees(IK[0]), degrees(IK[1]), degrees(IK[2]), degrees(IKReal[0]), degrees(IKReal[1]), degrees(IKReal[2])))
 
-    #TP=np.array([40,-150,0,1])
 
     Q=Ix.dot(np.linalg.inv(Trf)).dot(Lp[1])
     p=[Trf.dot(Ix).dot(x) for x in calcLegPoints(legIK(Q[0],Q[1],Q[2]))]
     drawLegPoints(p)
 
+    IK = legIK(Q[0],Q[1],Q[2])
+    IKReal = (pi/2 + IK[0], 2 * pi/3 + IK[1], IK[2])
+    print("LegIK RF: {:3.0f}, {:3.0f}, {:3.0f} -> {:3.0f}, {:3.0f}, {:3.0f} ".format(degrees(IK[0]), degrees(IK[1]), degrees(IK[2]), degrees(IKReal[0]), degrees(IKReal[1]), degrees(IKReal[2])))# 
+
+
+    Q=np.linalg.inv(Tlb).dot(Lp[2])
+    p=[Tlb.dot(x) for x in calcLegPoints(legIK(Q[0],Q[1],Q[2]))]
+    drawLegPoints(p)
+
+    IK = legIK(Q[0],Q[1],Q[2])
+    IKReal = (pi/2 + (IK[0]), pi/3 - IK[1], pi - IK[2])
+    print("LegIK LB: {:3.0f}, {:3.0f}, {:3.0f} -> {:3.0f}, {:3.0f}, {:3.0f} ".format(degrees(IK[0]), degrees(IK[1]), degrees(IK[2]), degrees(IKReal[0]), degrees(IKReal[1]), degrees(IKReal[2])))
+
+
     Q=Ix.dot(np.linalg.inv(Trb)).dot(Lp[3])
     p=[Trb.dot(Ix).dot(x) for x in calcLegPoints(legIK(Q[0],Q[1],Q[2]))]
     drawLegPoints(p)
 
+    IK = legIK(Q[0],Q[1],Q[2])
+    IKReal = (pi/2 - IK[0], 2 * pi/3  + IK[1], IK[2])
+    print("LegIK RB: {:3.0f}, {:3.0f}, {:3.0f} -> {:3.0f}, {:3.0f}, {:3.0f} ".format(degrees(IK[0]), degrees(IK[1]), degrees(IK[2]), degrees(IKReal[0]), degrees(IKReal[1]), degrees(IKReal[2])))
 
-omega =  pi/4 # Body xrot
-phi =0#math.pi/4# Body YRot
-psi = 0#math.pi/6 # Body ZRot
 
-xm = 0
+omega = 0#pi/8       # Body xrot
+phi =   0#i / 8       # math.pi/4# Body YRot
+psi =   0#pi/8    # math.pi/6 # Body ZRot
+
+xm = 00
 ym = 0
-zm = 0
+zm = 20
 
-drawRobot(Lp,bodyIK(0,0,0,xm,ym,zm))
+drawRobot(Lp,bodyIK(omega,phi,psi,xm,ym,zm))
 
 plt.show()
 

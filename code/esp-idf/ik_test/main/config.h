@@ -8,10 +8,10 @@
 #define Servo_Leg      1
 #define Servo_Shoulder 2
 
-#define FL  0 // 0, 1, 2
-#define FR  1 // 3, 4, 5
-#define RL  2 // 6, 7, 8
-#define RR  3 // 9, 10, 11
+#define LEG_LF  0 // 0, 1, 2
+#define LEG_RF  1 // 3, 4, 5
+#define LEG_LB  2 // 6, 7, 8
+#define LEG_RB  3 // 9, 10, 11
 
 #define L1  60.5  // y Distance between Shoulder Servo and Leg
 #define L2  10    // z Distance between Shoulder Servo and Leg
@@ -30,6 +30,9 @@
 
 extern const int16_t servo_min[12] ;
 extern const float servo_conversion[12] ;
+extern const float theta_range[3][2];
+extern const int8_t servo_invert[12];
+extern int16_t servo_angles[4][3];
 
 
 
