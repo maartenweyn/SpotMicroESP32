@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      "cordova-plugin-ble-central@1.2.4",
+      "/Users/maartenweyn/git/WeynRover/cordova/RoverController"
+    ]
+  ],
+  "_from": "cordova-plugin-ble-central@1.2.4",
+  "_id": "cordova-plugin-ble-central@1.2.4",
+  "_inBundle": false,
+  "_integrity": "sha512-NBRcAiH+VbKbmM3iNY3Psa4jGDYjWm/KGB3sikv0Fv0ZWfsI7XqjX6Fs6hmQJ+M7/X4qe/s8zDwRkQgU7ZOrjw==",
+  "_location": "/cordova-plugin-ble-central",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "cordova-plugin-ble-central@1.2.4",
+    "name": "cordova-plugin-ble-central",
+    "escapedName": "cordova-plugin-ble-central",
+    "rawSpec": "1.2.4",
+    "saveSpec": null,
+    "fetchSpec": "1.2.4"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-ble-central/-/cordova-plugin-ble-central-1.2.4.tgz",
+  "_spec": "1.2.4",
+  "_where": "/Users/maartenweyn/git/WeynRover/cordova/RoverController",
+  "author": {
+    "name": "Don Coleman",
+    "email": "don.coleman@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/don/cordova-plugin-ble-central/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-ble-central",
+    "platforms": [
+      "ios",
+      "android",
+      "wp8"
+    ]
+  },
+  "description": "Bluetooth Low Energy (BLE) Central Plugin",
+  "homepage": "https://github.com/don/cordova-plugin-ble-central#readme",
+  "keywords": [
+    "cordova",
+    "bluetooth",
+    "ble",
+    "bluetoothle",
+    "bluetooth le",
+    "low energy",
+    "smart",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "license": "Apache-2.0",
+  "name": "cordova-plugin-ble-central",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/don/cordova-plugin-ble-central.git"
+  },
+  "version": "1.2.4"
+}

@@ -1,0 +1,36 @@
+{
+  "_from": "git+https://github.com/dukhanov/cordova-background-timer.git",
+  "_id": "cordova-background-timer@0.0.4",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/cordova-background-timer",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "git+https://github.com/dukhanov/cordova-background-timer.git",
+    "rawSpec": "git+https://github.com/dukhanov/cordova-background-timer.git",
+    "saveSpec": "git+https://github.com/dukhanov/cordova-background-timer.git",
+    "fetchSpec": "https://github.com/dukhanov/cordova-background-timer.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/dukhanov/cordova-background-timer.git#ad8c171aeced224188c6cdfa391383c80982f425",
+  "_spec": "git+https://github.com/dukhanov/cordova-background-timer.git",
+  "_where": "/Users/maartenweyn/git/WeynRover/cordova/RoverController",
+  "bundleDependencies": false,
+  "cordova_name": "BackgroundTimer",
+  "deprecated": false,
+  "description": "BackgroundTimer Plugin",
+  "keywords": [
+    "resources"
+  ],
+  "license": "Apache License Version 2.0",
+  "name": "cordova-background-timer",
+  "platforms": [
+    "android"
+  ],
+  "version": "0.0.4"
+}

@@ -220,7 +220,7 @@ psi =   0#pi/8    # math.pi/6 # Body ZRot
 
 xm = 00
 ym = 0
-zm = 20
+zm = 00
 
 drawRobot(Lp,bodyIK(omega,phi,psi,xm,ym,zm))
 

@@ -8,6 +8,9 @@ Author Maarten Weyn
 #include <freertos/task.h>
 #include <math.h>
 
+#include "nvs.h"
+#include "nvs_flash.h"
+
 
 #include "esp_dsp.h"
 
@@ -18,8 +21,20 @@ Author Maarten Weyn
 
 #include "servo.h"
 #include "config.h"
+#include "bt_spp.h"
 
 static char tag[] = "IKTEST";
+
+typedef  struct {
+    float omega;
+    float phi;
+    float psi;
+    float xm;
+    float ym;
+    float zm;
+} position_t;
+
+position_t spot_position = {0,};
 
 // const servo_settings_t servo_settings[12] = {{150, 400, 1}, {130, 420, 0}, {125, 430, 1},
 //                                           {150, 510, 0}, {100, 480, 1}, {130, 505, 0},
@@ -55,7 +70,7 @@ float p[4][3] = {{-L1, -L3-L2, L4},{-L1, -L3-L2, L4},{-L1, -L3-L2, L4},{-L1, -L3
 #define RAD2DEGREES 57.295779513082321 // 180 / PI
 
 
-
+void set_orientation_cb(int16_t omega, int16_t phi, int16_t psi, int16_t xm, int16_t ym, int16_t zm);
 void test_servo() {
     esp_err_t ret = 0;
 
@@ -146,23 +161,6 @@ inline void set_foot_position(uint8_t leg_id, float x, float z, float y) {
 
 void sleep_position()
 {
-    // // sleep position
-    // set_servo(0, 90);
-    // set_servo(1, 150);
-    // set_servo(2, 0);
-
-    // set_servo(3, 90);
-    // set_servo(4, 30);
-    // set_servo(5, 180);
-
-    // set_servo(6, 90);
-    // set_servo(7, 150);
-    // set_servo(8, 0);
-
-    // set_servo(9, 90);
-    // set_servo(10, 30);
-    // set_servo(11, 180);
-
     set_foot_position(LEG_LF, -L1, L4-L3, -L2);
     set_foot_position(LEG_RF, L1, L4-L3, -L2);  
     set_foot_position(LEG_LB, -L1, L4-L3, -L2);  
@@ -172,24 +170,7 @@ void sleep_position()
 }
 
 void reset_position() {
-    omega = 0;
-    psi = 0;
-    height = 100;
-
-    calculate_foot_points();
-    esp_err_t ret = calculate_leg_positions();
-    if (ret == ESP_OK) set_leg_servos();
-    // for (int l = 0; l<4; l++) {
-    //     p[l][0] = -L1;
-    //     p[l][1]= height;
-    //     p[l][2] = 0;
-    //     esp_err_t ret = leg_IK(p[l], l, servo_angles[l]);
-    //     SP_LOGI(tag, "IK (%d, %d, %d) -> (%d, %d, %d) (%d)", p[l][0], p[l][1], p[l][2], servo_angles[l][0], servo_angles[l][1], servo_angles[l][2], ret);
-    //     for (int s=0;s<3;s++)
-    //         if (ret==ESP_OK) set_servo(l*3 + s, servo_angles[l][s]);
-    // }
-    
-
+    set_orientation_cb(0, 0, 0, 0, 0, 0);
 }
 
 esp_err_t set_legs() {
@@ -200,42 +181,37 @@ esp_err_t set_legs() {
     return ret;
 }
 
-void task_walk(void *ignore)
+void set_orientation_cb(int16_t omega, int16_t phi, int16_t psi, int16_t xm, int16_t ym, int16_t zm)
+{
+    esp_err_t ret = spot_IK(omega, phi, psi, xm, ym, zm, servo_angles);
+    ESP_LOGD(tag, "Valid IK %d", ret==ESP_OK);
+    if (ret == ESP_OK) {
+        print_int_matrix((int16_t*) servo_angles, 4, 3, "servo_angles");
+        set_leg_servos();
+        spot_position.omega = omega;
+        spot_position.phi = phi;
+        spot_position.psi = psi;
+        spot_position.xm  = xm;
+        spot_position.ym = ym;
+        spot_position.zm = zm;
+        set_new_orientation_act_value((int16_t) spot_position.omega, (int16_t) spot_position.phi, (int16_t) spot_position.psi, (int16_t) spot_position.xm, (int16_t) spot_position.ym, (int16_t) spot_position.zm);
+    }
+}
+
+void task_ik(void *ignore)
 {
     ESP_LOGI(tag, "Executing on core %d", xPortGetCoreID());
     esp_err_t ret;
 
-    //sleep_position();
-
     reset_position();
     
-    // for (int l=0; l<4; l++) {
-    //     esp_err_t ret = leg_IK(p[l], l, servo_angles[l]);
-    //     ESP_LOGI(tag, "IK (%d, %d, %d) -> (%d, %d, %d) (%d)", p[l][0], p[l][1], p[l][2], servo_angles[l][0], servo_angles[l][1], servo_angles[l][2], ret);
-    //     for (int s=0;s<3;s++)
-    //         if (ret==ESP_OK) set_servo(l*3 + s, servo_angles[l][s]);
-    // }
-
     while(1)
     {
         vTaskDelay(2000 / portTICK_RATE_MS);
+        // set_new_orientation_act_value(1, 0, 0, 0, 0, 0);
+        // vTaskDelay(2000 / portTICK_RATE_MS);
+        // set_new_orientation_act_value(2, 0, 0, 0, 0, 0);
 
-        for (int i = 0; i < 10; i++) {
-            height -= 2;
-            ret = set_legs();
-            vTaskDelay(10 / portTICK_RATE_MS);
-        }
-
-
-        vTaskDelay(1000 / portTICK_RATE_MS);
-
-        for (int i = 0; i < 10; i++) {
-            height += 2;
-            ret = set_legs();
-            vTaskDelay(10 / portTICK_RATE_MS);
-        }
-
-        
 
     }
 
@@ -244,8 +220,19 @@ void task_walk(void *ignore)
 
 void app_main()
 {
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK( ret );
+
     init_pca9685();
     init_servos();
+
+    ESP_LOGD(tag, "BLE");
+    start_bluetooth();
+    set_new_orientation_cb(&set_orientation_cb);
 
     // ESP_LOGI(tag, "Start Example.");
 
@@ -257,13 +244,8 @@ void app_main()
     // ESP_LOGD(tag, "%.2f %.2f", C[0][0], C[0][1]);
     // ESP_LOGD(tag, "%.2f %.2f", C[1][0], C[1][1]);
 
-    esp_err_t ret = spot_IK(0, 0, 0, 0, 0, 20, servo_angles);
 
-    ESP_LOGD(tag, "Valid IK %d", ret==ESP_OK);
-    print_int_matrix((int16_t*) servo_angles, 4, 3, "servo_angles");
 
-    while(1) {};
-
-    xTaskCreate(task_walk, "task_walk", 1024 * 2, (void* ) 0, 10, NULL);
+    xTaskCreate(task_ik, "task_ik", 1024 * 2, (void* ) 0, 10, NULL);
 }
 

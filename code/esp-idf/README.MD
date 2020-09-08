@@ -24,6 +24,7 @@ then
 idf.py build
 idf.py -p /dev/tty.SLAB_USBtoUART flash
 idf.py -p /dev/tty.SLAB_USBtoUART monitor
+idf.py -p /dev/tty.SLAB_USBtoUART flash monitor
 
 ```
 

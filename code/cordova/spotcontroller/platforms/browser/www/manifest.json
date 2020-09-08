@@ -1,0 +1,11 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "SpotController",
+  "short_name": "SpotController",
+  "version": "be.wesdec.spotcontroller",
+  "description": "An communication app for a Spot Micro",
+  "author": "Maarten Weyn",
+  "icons": [],
+  "start_url": "index.html"
+}
