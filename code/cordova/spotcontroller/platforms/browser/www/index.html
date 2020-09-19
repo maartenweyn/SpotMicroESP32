@@ -7,19 +7,23 @@
         <meta name="author" content="Maarten Weyn">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+				<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+				
+				<link rel="stylesheet" type="text/css" href="lib/OnsenUI/css/onsenui.css">
+				<link rel="stylesheet" type="text/css" href="lib/OnsenUI/css/onsen-css-components.min.css">
+				<link rel="stylesheet" type="text/css" href="css/index.css">
 		<style>
 *
 {
 	box-sizing: border-box;
 }
-body
+/* body
 {
 	margin: 10px;
 	padding: 10px;
 	font-family: monospace;
-}
-.row
+} */
+/* .row
 {
 	display: inline-flex;
 	clear: both;
@@ -43,11 +47,12 @@ body
 #joystick2
 {
 	border: 1px solid #0000FF;
-}
+} */
 		</style>
 		<script src="js/joy.js"></script>
 	</head>
 	<body>
+		
         <!-- Example of two JoyStick integrated in the page structure -->
         <div id="joy1Div" style="width:200px;height:200px;margin:50px;position:fixed;top:10px;left:50px;"></div>
 		<div style="position:fixed;bottom:10px;left:50px;">
@@ -59,35 +64,10 @@ body
 			X :<input id="joy2X" type="text" /></br>
 			Y :<input id="joy2Y" type="text" />
 		</div>
-		<!-- <div class="row">
-			<div class="columnLateral">
-				<div id="joy1Div" style="width:200px;height:200px;margin:50px"></div>
-				Posizione X:<input id="joy1PosizioneX" type="text" /><br />
-				Posizione Y:<input id="joy1PosizioneY" type="text" /><br />
-				Direzione:<input id="joy1Direzione" type="text" /><br />
-				X :<input id="joy1X" type="text" /></br>
-				Y :<input id="joy1Y" type="text" />
-			</div>
-			<div class="columnLateral">
-				<div id="joy2Div"></div>
-				Posizione X:<input id="joy2PosizioneX" type="text" /></br>
-				Posizione Y:<input id="joy2PosizioneY" type="text" /></br>
-				Direzione:<input id="joy2Direzione" type="text" /></br>
-				X :<input id="joy2X" type="text" /></br>
-				Y :<input id="joy2Y" type="text" />
-			</div>			
-		</div> -->
-		<script type="text/javascript">
-// Create JoyStick object into the DIV 'joy1Div'
-var joy1Param = { "title": "joystick1", "autoReturnToCenter": false };
-var Joy1 = new JoyStick('joy1Div', joy1Param);
+	
 
-// Create JoyStick object into the DIV 'joy2Div'
-var joy2Param = { "title": "joystick2", "autoReturnToCenter": false };
-var Joy2 = new JoyStick('joy2Div', joy2Param);
-
-
-        </script>
+		<div id="status" class="content"></div>
+		<div id="logs" class="content"></div>
         
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="lib/OnsenUI/js/onsenui.min.js"></script>

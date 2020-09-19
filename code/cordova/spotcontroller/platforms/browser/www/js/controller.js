@@ -1,7 +1,25 @@
 var controller = {
     useSonar: true,
+    rotationRanges: {
+        omega: 30,
+        phi: 30,
+        psi: 30,
+        xm: 20,
+        ym: 20,
+        zm: 20,
+    },
+    Joy1 : null,
+    Joy2: null,
     initialize: function () {
         debug.log("UUID " + device.uuid, "success");
+
+        var joy1Param = { "title": "joystick1", "autoReturnToCenter": true };
+        controller.Joy1 = new JoyStick('joy1Div', joy1Param);
+
+        var joy2Param = { "title": "joystick2", "autoReturnToCenter": true };
+        controller.Joy2 = new JoyStick('joy2Div', joy2Param);
+
+        setInterval(controller.timer_callback, 100);
     },
     sendButton: function (button) { 
         var buttonvalue = button.charCodeAt(0);
@@ -26,5 +44,30 @@ var controller = {
         } else {
             document.querySelector('#icon_sonar').setAttribute('icon', 'md-eye-off');
         }
-    }
+    },
+    timer_callback: function() {
+        var Joy1X = controller.Joy1.GetPosX();
+        var Joy1Y = controller.Joy1.GetPosY();
+        var Joy2X = controller.Joy2.GetPosX();
+        var Joy2Y = controller.Joy2.GetPosY();
+        // console.log("Joy1 " + Joy1X + " " + Joy1Y);
+        // console.log("Joy2 " + Joy2X + " " + Joy2Y);
+
+        omega = (controller.rotationRanges.omega * (Joy1X - 100) / 50).toFixed(0)
+        phi = (controller.rotationRanges.phi * (Joy1Y - 100) / 50).toFixed(0);
+        psi = 0;
+        zm = (controller.rotationRanges.xm * (Joy2X - 100) / 50).toFixed(0);
+        xm = (controller.rotationRanges.xm * (Joy2Y - 100) / 50).toFixed(0);
+        ym = 0;
+
+        var statusLine = '<div class="log-item">' +
+            '<div>POSITION: (' + Joy1X + ', ' + Joy1Y + ') (' + Joy2X + ', ' + Joy2Y + ')' +  
+            ' -> (' + omega + ', ' + phi + ', ' + psi + ') (' + xm + ', ' + xm + ', ' + zm + ') </div>' +
+            '</div>';
+
+        $('#status').html(statusLine);
+
+        // console.log("Rotation " + omega + " " + phi + " " + psi + " " + xm + " " + ym + " " + zm);
+        bluetooth.sendOrientation(omega, phi, psi, xm, ym, zm);
+    },
 }

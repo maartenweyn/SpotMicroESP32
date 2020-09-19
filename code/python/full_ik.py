@@ -25,7 +25,7 @@ def setupView(limit):
 
 setupView(200).view_init(elev=12., azim=28)
 
-Lp=np.array([[100,-100,100,1],[100,-100,-100,1],[-100,-100,100,1],[-100,-100,-100,1]])
+Lp=np.array([[80,-200,100,1],[80,-200,-100,1],[-120,-200,100,1],[-120,-200,-100,1]])
 
 def legIK(x,y,z):
     
@@ -218,8 +218,8 @@ omega = 0#pi/8       # Body xrot
 phi =   0#i / 8       # math.pi/4# Body YRot
 psi =   0#pi/8    # math.pi/6 # Body ZRot
 
-xm = 00
-ym = 0
+xm = -40
+ym = -170
 zm = 00
 
 drawRobot(Lp,bodyIK(omega,phi,psi,xm,ym,zm))

@@ -7,6 +7,7 @@
 static char tag[] = "IK";
 
 #define RAD2DEGREES 57.295779513082321 // 180 / PI
+#define DEGREES2RAD 0.017453292519943
 
 // float orientation[3] = {M_PI / 8, M_PI / 8, 0}; //A 3x1 arry with Spot's Roll, Pitch, Yaw angles - omega, phi, psi
 // float position[3] = {0, 0, 0};    //A 3x1 array with Spot's X, Y, Z coordinates
@@ -26,7 +27,7 @@ static const float Trf2[4][4] = {{0, 0, 1, L/2},  {0, 1, 0, 0}, {-1, 0, 0, -W/2}
 static const float Tlb2[4][4] = {{0, 0, 1, -L/2},  {0, 1, 0, 0}, {-1, 0, 0, W/2},  {0, 0, 0, 1}}; //Fixed part of Tranformation Matrix Left Back
 static const float Tlf2[4][4] = {{0, 0, 1, L/2}, {0, 1, 0, 0}, {-1, 0, 0, W/2},  {0, 0, 0, 1}}; //Fixed part of Tranformation Matrix Left Front
 
-static float Lp[4][4] = {{100, -100, 100, 1}, {100, -100, -100, 1}, {-100, -100, 100, 1}, {-100, -100, -100, 1}};
+static float Lp[4][4] = {{80, -150, 100, 1}, {80, -150, -100, 1}, {-120, -150, 100, 1}, {-120, -150, -100, 1}};
 
 static const float Ix[4][4] = {{-1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 
@@ -87,13 +88,14 @@ void print_matrix(float * matrix, int n, int m, char* name) {
   }
 }
 
-void print_int_matrix(int16_t * matrix, int n, int m, char* name) {
+void print_int_matrix(int16_t * matrix, int n, int m, char* name, uint8_t newlines) {
   printf("Matrix %s:\n", name);
   for (int i=0;i<n;i++) {
     for (int j=0;j<m;j++)
       printf("%3d ", matrix[i*m + j]);
-    printf("\n");
+    if (newlines) printf("\n");
   }
+  if (!newlines) printf("\n");
 }
 
 esp_err_t body_IK(float omega, float phi, float psi, float xm, float ym, float zm) {
@@ -224,7 +226,7 @@ esp_err_t spot_IK(float omega, float phi, float psi, float xm, float ym, float z
   // print_matrix((float*) Q, 1, 4, "Q LF");
   ret += leg_IK((float*) Q, LEG_LF, (int16_t*) servoangles[0]);
   printf("leg_IK return %d\n", ret);
-  print_int_matrix((int16_t*) servo_angles[0], 1, 3, "servo_angles LF");
+  print_int_matrix((int16_t*) servo_angles[0], 1, 3, "servo_angles LF", 1);
 
 
 
@@ -237,15 +239,15 @@ esp_err_t spot_IK(float omega, float phi, float psi, float xm, float ym, float z
   dspm_mult_f32_ae32((float*) Q1, (float*) Lp[1], (float*) Q, 4, 4, 1);
   // print_matrix((float*) Q, 1, 4, "Q RF");
   ret += leg_IK((float*) Q, LEG_RF, (int16_t*) servoangles[1]);
-  printf("leg_IK return %d\n", ret);
-  print_int_matrix((int16_t*) servo_angles[1], 1, 3, "servo_angles RF");
+  //printf("leg_IK return %d\n", ret);
+  //print_int_matrix((int16_t*) servo_angles[1], 1, 3, "servo_angles RF");
 
   ret += inverse(Tlb, inv);
   dspm_mult_f32_ae32((float*) inv, (float*) Lp[2], (float*) Q, 4, 4, 1);
   // print_matrix((float*) Q, 1, 4, "Q LB");
   ret += leg_IK((float*) Q, LEG_LB, (int16_t*) servoangles[2]);
-  printf("leg_IK return %d\n", ret);
-  print_int_matrix((int16_t*) servo_angles[2], 1, 3, "servo_angles LB");
+  //printf("leg_IK return %d\n", ret);
+  //print_int_matrix((int16_t*) servo_angles[2], 1, 3, "servo_angles LB");
 
   // printf("\n\nRB-----\n");
   ret += inverse(Trb, inv);
@@ -256,8 +258,8 @@ esp_err_t spot_IK(float omega, float phi, float psi, float xm, float ym, float z
 
   // print_matrix((float*) Q, 1, 4, "Q RB");
   ret += leg_IK((float*) Q, LEG_RB, (int16_t*) servoangles[3]);
-  printf("leg_IK return %d\n", ret);
-  print_int_matrix((int16_t*) servo_angles[3], 1, 3, "servo_angles RB");
+  //printf("leg_IK return %d\n", ret);
+  //print_int_matrix((int16_t*) servo_angles[3], 1, 3, "servo_angles RB");
 
   return ret;
 }

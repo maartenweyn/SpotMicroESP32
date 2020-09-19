@@ -9,6 +9,7 @@ var bluetooth = {
     connectedDevice: {},
     connectingDevice: {},
     lastConnectedDeviceId: false,
+    connected: false,
     messages: [],
     currentmessage: new Uint8Array(100),
     currentmessagepointer: 0,
@@ -137,6 +138,7 @@ var bluetooth = {
         window.BackgroundTimer.stop(bluetooth.timerstop_successCallback, bluetooth.timerstop_errorCallback);
 
         //bluetooth.sendTime();
+        bluetooth.connected = true;
     },
     connectDevice: function (deviceId, deviceName) {
         bluetooth.connectingDevice = {
@@ -149,10 +151,24 @@ var bluetooth = {
     sendData(data) {
         ble.write(bluetooth.connectedDevice.id, bluetooth.serviceUuids.serviceUUID, bluetooth.serviceUuids.orientationSetValueCharacteristic, data, bluetooth.onSend, bluetooth.onError);
     },
+    sendOrientation(omega, phi, psi, x, y, z) {
+        var data = new Int16Array(6);
+        data[0] = omega;
+        data[1] = phi;
+        data[2] = psi;
+        data[3] = x;
+        data[4] = y;
+        data[5] = z;
+        if (bluetooth.connected) {
+            //console.log("Sending data");
+            ble.write(bluetooth.connectedDevice.id, bluetooth.serviceUuids.serviceUUID, bluetooth.serviceUuids.orientationSetValueCharacteristic, data.buffer, bluetooth.onSend, bluetooth.onError);
+        };
+    },
     onDisconnectDevice: function () {
         debug.log('Disconnected from ' + bluetooth.lastConnectedDeviceId, 'success');
         bluetooth.connectedDevice = {};
         bluetooth.toggleConnectionButtons();
+        bluetooth.connected = false;
     },
     disconnectDevice: function (event) {
         debug.log('Disconnecting from ' + bluetooth.connectedDevice.id);

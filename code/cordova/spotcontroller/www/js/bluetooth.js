@@ -223,7 +223,7 @@ var bluetooth = {
             bluetooth.connectedDevice = {};
             debug.log('error and disconnected from ' + bluetooth.lastConnectedDeviceId, 'success');
             bluetooth.toggleConnectionButtons();
-            window.BackgroundTimer.start(bluetooth.timerstart_successCallback, bluetooth.timerstart_errorCallback, bluetooth.background_timer_settings);
+            //window.BackgroundTimer.start(bluetooth.timerstart_successCallback, bluetooth.timerstart_errorCallback, bluetooth.background_timer_settings);
         });
     },
     toggleConnectionButtons: function () {
